@@ -24,6 +24,7 @@ function Category({ handleAddProducts }) {
       price: price,
     };
   }, [search]);
+
   useEffect(() => {
     const getProducts = async () => {
       try {
@@ -61,7 +62,7 @@ function Category({ handleAddProducts }) {
         <div className={`${style["category-content"]} row `}>
           {products?.map((product, index) => (
             <div className={`${style.cover} col l-2-4`} key={index}>
-              <div className={`${style.item} `} >
+              <div className={`${style.item} `}>
                 <Link
                   to={`/detail/${product.id}`}
                   className={style["item-image"]}

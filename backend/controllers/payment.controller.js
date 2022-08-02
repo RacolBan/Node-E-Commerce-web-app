@@ -1,67 +1,108 @@
-const { PayModel } = require("../models")
+const {
+  PayModel,
+  OrderModel,
+  OrderdetailModel,
+  CartModel,
+} = require("../models");
+const sequelize = require("../models/config.model");
+
+const sendMail = require("../services/email.service");
 
 const getPayById = async (req, res) => {
-    const { id } = req.params;
+  const { id } = req.params;
 
-    try {
-        const foundPay = await PayModel.findByPk(id);
-        if (!foundPay) {
-            return res.status(404).json({ mesasge: "Not Found Payment" });
-        }
-        res.status(200).json(foundPay);
-
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-        return
+  try {
+    const foundPay = await PayModel.findByPk(id);
+    if (!foundPay) {
+      return res.status(404).json({ mesasge: "Not Found Payment" });
     }
-}
+    res.status(200).json(foundPay);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+    return;
+  }
+};
 
 const getPayByOrderId = async (req, res) => {
-    const { orderId } = req.params
+  const { orderId } = req.params;
 
-    try {
-        const foundPay = await PayModel.findOne({
-            where: {
-                orderId,
-            }
-        });
-        if (!foundPay) {
-            return res.status(404).json({ message: "Not Found Payment" })
-        }
-        res.status(200).json(foundPay)
-    } catch (error) {
-        return res.status(500).json({ message: error.message })
-
+  try {
+    const foundPay = await PayModel.findOne({
+      where: {
+        orderId,
+      },
+    });
+    if (!foundPay) {
+      return res.status(404).json({ message: "Not Found Payment" });
     }
-}
+    res.status(200).json(foundPay);
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
 
-const initPay = async () => {
-    const { orderId } = req.params;
-    const { method, total } = req.body;
-    try {
-        const foundPay = await PayModel.findOne({
-            where: {
-                orderId,
-            }
-        });
+const initPay = async (req, res) => {
+  const t = await sequelize.transaction();
 
-        if (foundPay) {
-            return res.status(409).json({ message: "Payment existed" })
-        };
+  const { method, totalPrice, userId, products, email } = req.body;
+  try {
+    const newOrder = await OrderModel.create(
+      {
+        userId,
+      },
+      { transaction: t }
+    );
+    const orderDetailBulkData = [];
+    const removeCartIds = [];
+    products.forEach((item) => {
+      orderDetailBulkData.push({
+        orderId: newOrder.id,
+        productId: item.id,
+        quantityProduct: item.quantity,
+        VAT: 10,
+      });
+      removeCartIds.push(item.id);
+    });
+    await OrderdetailModel.bulkCreate(orderDetailBulkData, {
+      transaction: t,
+    });
+    const newPayment = await PayModel.create(
+      {
+        method: method,
+        total: totalPrice,
+        orderId: newOrder.id,
+      },
+      { transaction: t }
+    );
 
-        const newPayment = await PayModel.create({ method, total, orderId })
+    await CartModel.destroy(
+      { where: { productId: removeCartIds } },
+      { transaction: t }
+    );
+    await t.commit();
 
-        if (!newPayment) {
-            return res.status(400).json({ message: "Create  Payment Unsuccessfully" })
-        }
-        res.status(201).json(newPayment)
-    } catch (error) {
-        return res.status(500).json({ message: error.mesasge })
-    }
-}
+    await sendMail(
+      `${email}`,
+      `Successful Payment`,
+      `Thanks for ordering at our BK store
+        Payment Details:
+        #####################################
+        PaymentID: ${newPayment.id},
+        Payment method: ${method} ,
+        Paid :$${totalPrice}
+        #####################################
+        Good luck and have fun!
+    `
+    );
+    res.status(200).json({ message: "Payment successfully !" });
+  } catch (error) {
+    await t.rollback();
+    return res.status(500).json({ message: error.mesasge });
+  }
+};
 
 module.exports = {
-    getPayById,
-    getPayByOrderId,
-    initPay
-}
+  getPayById,
+  getPayByOrderId,
+  initPay,
+};

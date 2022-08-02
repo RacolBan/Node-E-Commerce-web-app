@@ -14,15 +14,15 @@ import { toast } from "react-toastify";
 function Sidebar() {
   const state = useContext(GlobalState);
   const [isLogged, setIsLogged] = state.UserAPI.isLogged;
-  const nav = useNavigate()
+  const nav = useNavigate();
 
   const handleLogout = () => {
     localStorage.clear();
     setIsLogged(false);
     toast.success("Logout successfully", {
-      position: toast.POSITION.TOP_CENTER
+      position: toast.POSITION.TOP_CENTER,
     });
-    nav('/')
+    nav("/");
   };
   return (
     <div className={style.main}>
@@ -60,10 +60,13 @@ function Sidebar() {
               <span>Manufacture</span>
             </li>
           </Link>
-          <li>
-            <CreditCardIcon className={style.icon} />
-            <span>Orders</span>
-          </li>
+          <Link to="/admin/orders" style={{ textDecoration: "none" }}>
+            <li>
+              <CreditCardIcon className={style.icon} />
+              <span>Orders</span>
+            </li>
+          </Link>
+
           <p className={style.title}>USER</p>
           <li>
             <ExitToAppIcon className={style.icon} />

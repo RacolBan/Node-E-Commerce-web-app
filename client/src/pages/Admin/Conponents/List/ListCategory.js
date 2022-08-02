@@ -5,8 +5,29 @@ import style from "./List.module.css";
 import { toast } from "react-toastify";
 import axios from "axios";
 
-function ListCategory({ columns, title, categoryAll }) {
-  const nav = useNavigate();
+function ListCategory({ columns, title }) {
+  const [categoryAll, setCategoryAll] = useState([]);
+  const login = JSON.parse(localStorage.getItem("login")) || null;
+  const [isDlt,setDlt] = useState(false)
+
+  const getCategory = async () => {
+    if (login) {
+      try {
+        const { data } = await axios.get("http://localhost:8000/category", {
+          headers: { "access-token": "Bearer " + login.accesstoken },
+        });
+        setCategoryAll(data);
+      } catch (error) {
+        toast.error(error.response.data.message, {
+          position: toast.POSITION.TOP_CENTER,
+        });
+      }
+    }
+  };
+
+  useEffect(() => {
+    getCategory();
+  }, [isDlt]);
 
   const actionColumn = [
     {
@@ -44,11 +65,11 @@ function ListCategory({ columns, title, categoryAll }) {
           },
         }
       );
-      
+      setDlt(!isDlt)
       toast.success(data.message, {
         position: toast.POSITION.TOP_CENTER,
       });
-      return nav("/admin/category");
+      
     } catch (error) {
       toast.error(error.response.data.message, {
         position: toast.POSITION.TOP_CENTER,

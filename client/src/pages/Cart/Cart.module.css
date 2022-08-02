@@ -23,6 +23,7 @@
   justify-content: center;
   display: flex;
   padding: 10px 0;
+  cursor: pointer;
 }
 
 .cart .container .checkout span {
@@ -141,4 +142,38 @@
   font-size: 20px;
   font-weight: 700;
   padding-right: 15%;
+}
+
+.cart .no-cart {
+  text-align: center;
+  background: #fff;
+  height: 30vh;
+}
+
+.cart .no-cart-img {
+  padding: 20px 0;
+}
+
+.cart .no-cart-img img {
+  width: auto;
+  height: 100%;
+  vertical-align: middle;
+}
+
+.cart .no-cart-title {
+  font-size: 26px;
+  letter-spacing: 1px;
+  font-weight: 500;
+  margin-bottom: 30px;
+}
+
+.cart .no-cart a {
+  font-size: 15px;
+  text-transform: uppercase;
+  color: #ffffff;
+  padding: 10px 20px;
+  background: #c8191f;
+  border-radius: 3px;
+  letter-spacing: 1px;
+  text-decoration: none;
 }

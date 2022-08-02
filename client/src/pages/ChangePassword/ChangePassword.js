@@ -48,7 +48,7 @@ function ChangePassword() {
                 src={
                   user.avatar === null
                     ? "./images/Avatar/avatar.jpg"
-                    : `http://localhost:8000/images/${user.avatar}`
+                    : `http://localhost:8000/${user.avatar}`
                 }
                 alt="avatar"
               />

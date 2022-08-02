@@ -101,3 +101,9 @@ export const columnsManufacture = [
   { field: "name", headerName: "Name", width: 150 },
   { field: "nameCategory", headerName: "Name Category", width: 150 }
 ];
+export const columnsOrder = [
+  { field: "id", headerName: "ID", width: 100 },
+  { field: "userId", headerName: "UserID", width: 150 },
+  { field: "createdAt", headerName: "CreatedAt", width: 200 },
+  { field: "updatedAt", headerName: "UpdatedAt", width: 200 }
+];

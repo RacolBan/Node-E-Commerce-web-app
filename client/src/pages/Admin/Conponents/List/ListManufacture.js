@@ -30,7 +30,6 @@ function ListManufacture({ columns, title }) {
     getManufacture();
   }, [isDlt]);
 
-  const nav = useNavigate();
   const actionColumn = [
     {
       field: "action",
@@ -72,7 +71,6 @@ function ListManufacture({ columns, title }) {
         position: toast.POSITION.TOP_CENTER,
       });
 
-      nav("/admin/manufacture");
     } catch (error) {
       toast.error(error.response.data.message, {
         position: toast.POSITION.TOP_CENTER,

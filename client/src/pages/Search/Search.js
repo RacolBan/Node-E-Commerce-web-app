@@ -14,21 +14,19 @@ function Search({ handleAddProducts }) {
     };
   }, [search]);
   useEffect(() => {
-    if (query) {
-      const getProducts = async () => {
-        try {
-          const { data } = await axios.get(
-            `http://localhost:8000/product/search?query=${query}`
-          );
-          setShowResult(data.foundProducts);
-        } catch (error) {
-          toast.error(error.response.data.message, {
-            position: toast.POSITION.TOP_CENTER,
-          });
-        }
-      };
-      getProducts();
-    }
+    const getProducts = async () => {
+      try {
+        const { data } = await axios.get(
+          `http://localhost:8000/product/search?query=${query}`
+        );
+        setShowResult(data.foundProducts);
+      } catch (error) {
+        toast.error(error.response.data.message, {
+          position: toast.POSITION.TOP_CENTER,
+        });
+      }
+    };
+    getProducts();
   }, [query]);
 
   return (

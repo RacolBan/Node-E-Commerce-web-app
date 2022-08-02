@@ -9,7 +9,8 @@ import { toast } from "react-toastify";
 
 function Profile() {
   const state = useContext(GlobalState);
-  const user= state.UserAPI.user[0];
+  const [user, setUser] = state.UserAPI.user;
+  
   const nav = useNavigate();
   const [firstname, setFirstname] = useState("");
   const [lastname, setLastname] = useState("");
@@ -77,15 +78,10 @@ function Profile() {
               },
             }
           );
-          const local = JSON.parse(localStorage.getItem("login"));
-          local.avatar = data;
-          localStorage.setItem("login", JSON.stringify(local));
-          
+          setUser({ ...user, avatar: data.filename });
           toast.success("Update successfully", {
             position: toast.POSITION.TOP_CENTER,
           });
-
-          return nav("/profile");
         } catch (error) {
           toast.error(error.response.data.message, {
             position: toast.POSITION.TOP_CENTER,

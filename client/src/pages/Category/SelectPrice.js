@@ -14,8 +14,8 @@ const SelectPrice = ({page,manufacture}) => {
     <div className={style.selectPrice}>
       <select onChange={handleChange}>
         <option value="">Sort</option>
-        <option value="asc">ASCENDING</option>
-        <option value="desc">DESCENDING</option>
+        <option value="asc">Ascending</option>
+        <option value="desc">Descending</option>
       </select>
     </div>
   );
