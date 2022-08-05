@@ -3,23 +3,19 @@ const { ManufactureModel, CategoryModel } = require("../models");
 
 const getManufacturer = async (req, res) => {
   try {
-    const categories = await CategoryModel.findAll();
-    let arr = [];
-    for (const element of categories) {
-      const found = await ManufactureModel.findAll({
-        where: {
-          categoryId: element.id,
-        },
-      });
-      for (const item of found) {
-        const obj = {
-          id: item.id,
-          nameCategory: element.name,
-          name: item.name,
-        };
-        arr.push(obj);
-      }
-    }
+    const found = await ManufactureModel.findAll({
+      include: [{ model: CategoryModel }],
+      raw: true,
+    });
+    const arr = [];
+    found.map((e) => {
+      const obj = {
+        id: e.id,
+        name: e.name,
+        nameCategory: e["category.name"],
+      };
+      arr.push(obj);
+    });
     res.status(200).json(arr);
   } catch (error) {
     return res.status(500).json({ message: error.message });

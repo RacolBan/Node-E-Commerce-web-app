@@ -1,5 +1,4 @@
-const { Op } = require("sequelize");
-const { CategoryModel, ManufactureModel } = require("../models");
+const { CategoryModel } = require("../models");
 
 const getCategory = async (req, res) => {
   try {

@@ -3,8 +3,24 @@ const { ProductModel, CategoryModel, ManufactureModel } = require("../models");
 
 const getAllProduct = async (req, res) => {
   try {
-    const productList = await ProductModel.findAll();
-    res.status(200).json(productList);
+    const productList = await ProductModel.findAll({
+      include: [{ model: CategoryModel }, { model: ManufactureModel }],
+      raw: true,
+    });
+    const arr = [];
+    productList.map((e) => {
+      const obj = {
+        id: e.id,
+        name: e.name,
+        price: e.price,
+        description: e.description,
+        image: e.image,
+        nameCategory: e["category.name"],
+        nameManufacture: e["manufacture.name"],
+      };
+      arr.push(obj);
+    });
+    res.status(200).json(arr);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -17,11 +33,23 @@ const getProductById = async (req, res) => {
       where: {
         id: productId,
       },
+      include: [{ model: CategoryModel }, { model: ManufactureModel }],
+      raw: true,
     });
+
     if (!found) {
       return res.status(404).json({ message: "Not found Product" });
     }
-    res.status(200).json({ message: "Get product successfully", found });
+    const product = {
+      id: found.id,
+      name: found.name,
+      price: found.price,
+      description: found.description,
+      image: found.image,
+      nameCategory: found["category.name"],
+      nameManufacture: found["manufacture.name"],
+    };
+    res.status(200).json({ message: "Get product successfully", product });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -81,9 +109,9 @@ const pagination = async (req, res) => {
 const paginationByCategory = async (req, res) => {
   const { categoryId } = req.params;
   try {
-    let { page, limit, manufacture, price } = req.query;
+    let { page, limit, manufacture, sort } = req.query;
     if (manufacture == 0) {
-      if (price == "asc") {
+      if (sort == "asc") {
         const offset = (parseInt(page) - 1) * parseInt(limit);
 
         let { count, rows } = await ProductModel.findAndCountAll({
@@ -109,7 +137,7 @@ const paginationByCategory = async (req, res) => {
           count,
           rows,
         });
-      } else if (price == "desc") {
+      } else if (sort == "desc") {
         const offset = (parseInt(page) - 1) * parseInt(limit);
 
         let { count, rows } = await ProductModel.findAndCountAll({
@@ -151,7 +179,7 @@ const paginationByCategory = async (req, res) => {
         });
       }
     } else {
-      if (price == "asc") {
+      if (sort == "asc") {
         const offset = (parseInt(page) - 1) * parseInt(limit);
 
         let { count, rows } = await ProductModel.findAndCountAll({
@@ -177,7 +205,7 @@ const paginationByCategory = async (req, res) => {
           count,
           rows,
         });
-      } else if (price == "desc") {
+      } else if (sort == "desc") {
         const offset = (parseInt(page) - 1) * parseInt(limit);
 
         let { count, rows } = await ProductModel.findAndCountAll({
@@ -310,7 +338,7 @@ const initProduct = async (req, res) => {
 
 const updateProduct = async (req, res) => {
   try {
-    const { name, price, description, image, categoryId, manufactureId } =
+    const { name, price, description, nameCategory, nameManufacture } =
       req.body;
     const { productId } = req.params;
 
@@ -319,15 +347,25 @@ const updateProduct = async (req, res) => {
     if (!foundProduct) {
       return res.status(404).json({ message: "Not Found Product" });
     }
-
+    const foundCategory = await CategoryModel.findOne({where:{
+      name:nameCategory
+    }})
+    if (!foundCategory) {
+      return res.status(404).json({ message: "Not Found Category" });
+    }
+    const foundManufacture = await ManufactureModel.findOne({where:{
+      name:nameManufacture
+    }})
+    if (!foundManufacture) {
+      return res.status(404).json({ message: "Not Found Manufacture" });
+    }
     const update = {};
     if (name) update.name = name;
     if (price) update.price = price;
     if (description) update.description = description;
-    if (image) update.name = name;
-    if (categoryId) update.categoryId = categoryId;
-    if (manufactureId) update.manufactureId = manufactureId;
-
+    if (nameCategory) update.categoryId = foundCategory.id;
+    if (nameManufacture) update.manufactureId = foundManufacture.id;
+    
     await ProductModel.update(update, {
       where: {
         id: productId,
@@ -381,7 +419,8 @@ const searchProducts = async (req, res) => {
       },
     });
     res.status(200).json({
-      message: "Search successfully",foundProducts
+      message: "Search successfully",
+      foundProducts,
     });
   } catch (error) {
     return res.status(500).json({ message: error.message });

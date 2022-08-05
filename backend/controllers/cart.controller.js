@@ -1,4 +1,3 @@
-const { response } = require("express");
 const { Op } = require("sequelize");
 const { CartModel, ProductModel } = require("../models");
 
