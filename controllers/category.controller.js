@@ -33,6 +33,7 @@ const getCategoryByCategoryId = async (req, res) => {
 const initCategory = async (req, res) => {
   try {
     const { name } = req.body;
+    console.log(name)
     const foundCategory = await CategoryModel.findOne({
       where: {
         name
@@ -43,7 +44,7 @@ const initCategory = async (req, res) => {
     }
 
     // save data
-    const newCategory = await CategoryModel.create({ name});
+    const newCategory = await CategoryModel.create({ name });
     if (!newCategory) {
       return res
         .status(400)
@@ -64,15 +65,15 @@ const updateCategory = async (req, res) => {
 
     const { name } = req.body;
 
-    const foundCategory = await CategoryModel.findOne({where:{id:categoryId}});
+    const foundCategory = await CategoryModel.findOne({ where: { id: categoryId } });
 
     if (!foundCategory) {
       return res.status(404).json({ message: "Not Found Category" });
     }
 
-    await CategoryModel.update({name:name}, {
+    await CategoryModel.update({ name: name }, {
       where: {
-        id:categoryId
+        id: categoryId
       },
     });
 
@@ -86,7 +87,7 @@ const removeCategory = async (req, res) => {
   try {
     const { categoryId: id } = req.params;
 
-    const foundCategory = await CategoryModel.findOne({where:{id:id}});
+    const foundCategory = await CategoryModel.findOne({ where: { id: id } });
 
     if (!foundCategory) {
       return res.status(404).json({ message: "Not Found Data" });

@@ -23,11 +23,9 @@ const login = async (req, res) => {
 
     if (!account) return res.status(400).json({ message: "Account does not exist." });
 
-    const foundUser = await UserModel.findOne({where:{
-      accountId:account.id
-    }})
-    if(!foundUser) {
-      return res.status(404).json({message:"User does not exist."})
+    const foundUser = await UserModel.findOne({ where: { accountId: account.id } })
+    if (!foundUser) {
+      return res.status(404).json({ message: "User does not exist." })
     }
     // Compare encrypted password with hash_pwd (true)
     const isMatch = await bcrypt.compare(password, account.hashPwd);
@@ -43,7 +41,7 @@ const login = async (req, res) => {
       id: account.id,
       username: account.username,
       role: account.role,
-      userId:foundUser.id
+      userId: foundUser.id
     });
 
   } catch (err) {

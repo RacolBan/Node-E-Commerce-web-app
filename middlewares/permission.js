@@ -13,7 +13,7 @@ const isAdmin = async (req, res, next) => {
     if (account) {
 
         if (account.role !== permission.admin) {
-            return res.status(401).json({ message: "Unauthorized! You must have Admin Role to access" })
+            return res.status(403).json({ message: "Unauthorized! You must have Admin Role to access" })
         }
         next();
     }
@@ -31,7 +31,7 @@ const isMember = async (req, res, next) => {
     if (account) {
         // check user in data is admin, isn't he?
         if (account.role !== permission.member) {
-            return res.status(401).json({ message: "Unauthorized! You must have Memeber Role to access" })
+            return res.status(403).json({ message: "Unauthorized! You must have Memeber Role to access" })
         }
         next();
     }

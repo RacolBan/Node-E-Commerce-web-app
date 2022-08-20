@@ -6,10 +6,10 @@ const jwt = require('jsonwebtoken');
 
 const verifyTok = async (req, res, next) => {
     try {
-        const tok = req.headers["access-token"];  
+        const tok = req.headers["access-token"];
         // authentication
         if (!tok) {
-            return res.status(403).json({ message: "invalid authentication" });
+            return res.status(401).json({ message: "invalid authentication" });
         }
         const accessToken = tok.split(" ")[1];
 

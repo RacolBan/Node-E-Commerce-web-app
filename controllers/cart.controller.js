@@ -29,16 +29,21 @@ const getCartByUserId = async (req, res) => {
       where: {
         userId,
       },
+      include: ProductModel,
+      raw: true,
     });
-    const arr = carts.map((item) => {
-      return {id:item.productId };
+
+    const newCarts = carts.map((item) => {
+      return {
+        id: item["product.id"],
+        name: item["product.name"],
+        price: item["product.price"],
+        description: item["product.description"],
+        image: item["product.image"],
+        quantityProduct: item.quantityProduct,
+      };
     });
-    const foundProducts = await ProductModel.findAll({
-      where: {
-        [Op.or]: arr,
-      },
-    });
-    res.status(200).json(foundProducts);
+    res.status(200).json({ mesage: "Get add cart successfully!", newCarts });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -62,7 +67,7 @@ const getCartByProductId = async () => {
 
 const initCart = async (req, res) => {
   try {
-    const { userId, productId } = req.params;
+    const { userId, productId, quantityProduct } = req.params;
 
     const foundCart = await CartModel.findOne({
       where: {
@@ -79,46 +84,112 @@ const initCart = async (req, res) => {
         .json({ message: "This product has been added to your cart" });
     }
 
-    await CartModel.create({ userId, productId });
+    await CartModel.create({
+      userId,
+      productId,
+      quantityProduct: quantityProduct,
+    });
 
     res.status(201).json({ message: "Add your cart successfully" });
   } catch (error) {
     return res.status(500).json({ mesage: error.message });
   }
 };
-const removeCart = async(req,res)=>{
-    try {
-        const { userId, productId } = req.params;
-    
-        const foundCart = await CartModel.findOne({
-          where: {
-            [Op.and]: {
-              userId,
-              productId,
-            },
-          },
-        });
-    
-        if (!foundCart) {
-          return res
-            .status(404)
-            .json({ message: "This product never been added to your cart" });
-        }
-    
-        await CartModel.destroy({where:{
-            id:foundCart.id
-        }});
-    
-        res.status(201).json({ message: "Remove your cart successfully" });
-      } catch (error) {
-        return res.status(500).json({ mesage: error.message });
+const createCarts = async (req, res) => {
+  const { userId } = req.params;
+  const { products } = req.body;
+  const newCarts = [];
+  for (const item of products) {
+    await CartModel.destroy({
+      where: {
+        [Op.and]: {
+          userId,
+          productId: item.id,
+        },
+      },
+    });
+
+    const obj = {
+      userId,
+      quantityProduct: item.quantityProduct,
+      productId: item.id,
+    };
+    newCarts.push(obj);
+  }
+  await CartModel.bulkCreate(newCarts);
+  res.status(201).json({ mesage: "Add your cart successfully" });
+};
+const updateCart = async (req, res) => {
+  try {
+    const { userId, productId } = req.params;
+
+    const foundCart = await CartModel.findOne({
+      where: {
+        [Op.and]: {
+          userId,
+          productId,
+        },
+      },
+    });
+    if (!foundCart) {
+      return res
+        .status(404)
+        .json({ message: "This product never been added to your cart" });
+    }
+    const newQuantity = foundCart.quantityProduct + 1;
+    await CartModel.update(
+      { quantityProduct: newQuantity },
+      {
+        where: {
+          id: foundCart.id,
+        },
       }
-}
+    );
+
+    res
+      .status(201)
+      .json({ message: "Add your cart successfully", newQuantity });
+  } catch (error) {
+    return res.status(500).json({ mesage: error.message });
+  }
+};
+const removeCart = async (req, res) => {
+  try {
+    const { userId, productId } = req.params;
+
+    const foundCart = await CartModel.findOne({
+      where: {
+        [Op.and]: {
+          userId,
+          productId,
+        },
+      },
+    });
+
+    if (!foundCart) {
+      return res
+        .status(404)
+        .json({ message: "This product never been added to your cart" });
+    }
+
+    await CartModel.destroy({
+      where: {
+        id: foundCart.id,
+      },
+    });
+
+    res.status(201).json({ message: "Remove your cart successfully" });
+  } catch (error) {
+    return res.status(500).json({ mesage: error.message });
+  }
+};
 
 module.exports = {
   getCartById,
   getCartByProductId,
   getCartByUserId,
   initCart,
-  removeCart
+  createCarts,
+  updateCart,
+  removeCart,
 };
