@@ -1,6 +1,6 @@
 const { CategoryModel } = require("../models");
 
-const getCategory = async (req, res) => {
+const getCategory = async (_, res) => {
   try {
     const categories = await CategoryModel.findAll();
     res.status(200).json(categories);
@@ -45,15 +45,7 @@ const initCategory = async (req, res) => {
 
     // save data
     const newCategory = await CategoryModel.create({ name });
-    if (!newCategory) {
-      return res
-        .status(400)
-        .json({ message: "Create Category Unsuccessfully" });
-    }
-
-    res
-      .status(201)
-      .json({ message: "Created Category successfully", newCategory });
+    res.status(201).json({ message: "Created Category successfully", newCategory });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }

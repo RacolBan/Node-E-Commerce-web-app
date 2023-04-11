@@ -1,5 +1,5 @@
 const { OrderModel } = require("../models");
-const sequelize = require("../models/config.model");
+const sequelize = require("../config/config.model");
 
 const getOrders = async (req, res) => {
   try {

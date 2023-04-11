@@ -1,4 +1,4 @@
-const sequelize = require('./config.model.js')
+const sequelize = require('../config/config.model.js')
 const DataTypes = require('sequelize');
 
 const PayModel = sequelize.define("payments",

@@ -4,7 +4,7 @@ const {
   OrderdetailModel,
   CartModel,
 } = require("../models");
-const sequelize = require("../models/config.model");
+const sequelize = require("../config/config.model");
 
 const sendMail = require("../services/email.service");
 

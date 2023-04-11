@@ -1,6 +1,6 @@
 const bcrypt = require("bcrypt");
 const { UserModel, AccountModel } = require("../models");
-const sequelize = require("../models/config.model");
+const sequelize = require("../config/config.model");
 const jwt = require("jsonwebtoken");
 
 const getInfor = async (req, res) => {
@@ -83,27 +83,22 @@ const createNewInfor = async (req, res) => {
   const t = await sequelize.transaction();
 
   try {
-    const { firstName, lastName, email, address, phone, username, password } =
-      req.body;
-
+    const { firstName, lastName, email, address, phone, username, password } = req.body;
     // First, we start a transaction and save it into a variable
-
-    const found = await AccountModel.findOne(
+    const foundAccount = await AccountModel.findOne(
       {
         where: {
-          username,
-        },
+          username
+        }
       },
       { transaction: t }
     );
-    if (found) {
+    if (foundAccount) {
       return res.status(409).json({ message: "username has existed" });
     }
     // validate password
     if (password.length < 6) {
-      return res
-        .status(400)
-        .json({ message: "Password is at least 6 characters long." });
+      return res.status(400).json({ message: "Password is at least 6 long." });
     }
 
     //password Encryption
@@ -118,19 +113,11 @@ const createNewInfor = async (req, res) => {
     const newAccount = await AccountModel.create(account, { transaction: t });
     // prevent hashPash from showing on UI
     delete newAccount.dataValues.hashPwd;
-
-    if (!newAccount) {
-      // ROLLBACK TRANSACTION
-      return res
-        .status(400)
-        .json({ message: "create new Account unsuccesfully" });
-    }
-
     const foundProfile = await UserModel.findOne(
       {
         where: {
-          accountId: newAccount.id,
-        },
+          accountId: newAccount.id
+        }
       },
       { transaction: t }
     );
@@ -151,18 +138,12 @@ const createNewInfor = async (req, res) => {
 
     // save data to DB
     const newInfor = await UserModel.create(profile, { transaction: t });
-    
-    const accesstoken = jwt.sign(
-      { data: newInfor },
-      process.env.ACCESS_TOKEN_SECRET,
-      { expiresIn: "1d" }
-    );
-
+    const accessToken = jwt.sign({ id: newInfor.id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "1d" });
     res.status(201).json({
       message: "Create Successfully",
       newInfor,
       newAccount,
-      accesstoken,
+      accessToken
     });
     await t.commit();
   } catch (error) {
@@ -215,9 +196,7 @@ const createNewInforByAdmin = async (req, res) => {
 
     if (!newAccount) {
       // ROLLBACK TRANSACTION
-      return res
-        .status(400)
-        .json({ message: "create new Account unsuccesfully" });
+      return res.status(400).json({ message: "create new unsuccesfully" });
     }
 
     const foundProfile = await UserModel.findOne(
@@ -246,14 +225,6 @@ const createNewInforByAdmin = async (req, res) => {
 
     // save data to DB
     const newInfor = await UserModel.create(profile, { transaction: t });
-
-    if (!newInfor) {
-      await t.rollback();
-      return res
-        .status(400)
-        .json({ message: "create new Profile unsuccesfully" });
-    }
-
     res
       .status(201)
       .json({ message: "Created new User successfully", newInfor, newAccount });
@@ -319,18 +290,18 @@ const updateInforByAdmin = async (req, res) => {
       { where: { id: userId } }
     ),
       { transaction: t };
-      const foundAccount = await AccountModel.findOne({
-        where:{id:foundInfor.accountId}
-      })
-      if(!foundAccount){
-        await t.rollback()
-        return res.status(404).json({message:"Not Found Information Account "})
-      }
-      await AccountModel.update(
-        { role: role },
-        { where: { id: foundInfor.accountId } }
-      ),
-      res.status(201).json({message:"updated User successfully"})
+    const foundAccount = await AccountModel.findOne({
+      where: { id: foundInfor.accountId }
+    })
+    if (!foundAccount) {
+      await t.rollback()
+      return res.status(404).json({ message: "Not Found Information Account " })
+    }
+    await AccountModel.update(
+      { role: role },
+      { where: { id: foundInfor.accountId } }
+    ),
+      res.status(201).json({ message: "updated User successfully" })
   } catch (error) {
     await t.rollback();
     return res.status(500).json({ message: error.message });

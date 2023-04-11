@@ -1,15 +1,11 @@
 const jwt = require('jsonwebtoken');
-
-
-
-// login to get token, after appending that token into header
-
 const verifyTok = async (req, res, next) => {
     try {
-        const tok = req.headers["access-token"];
+        const tok = req.header('authorization');
+        console.log(tok);
         // authentication
         if (!tok) {
-            return res.status(401).json({ message: "invalid authentication" });
+            return res.status(401).json({ message: "invalid authentication or incredential" });
         }
         const accessToken = tok.split(" ")[1];
 
@@ -19,15 +15,9 @@ const verifyTok = async (req, res, next) => {
         next();
 
     } catch (error) {
-        return res.status(500).json({ message: error.message })
+        return res.status(401).json({ message: error.message })
     }
 };
-
-
-
-
 module.exports = {
-
-    verifyTok,
-
+    verifyTok
 }

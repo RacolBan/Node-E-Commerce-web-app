@@ -21,7 +21,7 @@ const login = async (req, res) => {
       },
     });
 
-    if (!account) return res.status(400).json({ message: "Account does not exist." });
+    if (!account) return res.status(404).json({ message: "Account does not exist." });
 
     const foundUser = await UserModel.findOne({ where: { accountId: account.id } })
     if (!foundUser) {

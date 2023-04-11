@@ -1,7 +1,5 @@
 const permission = require("../config/permission");
 const { AccountModel } = require("../models");
-
-
 const isAdmin = async (req, res, next) => {
     const id = req.id;
     const account = await AccountModel.findOne({

@@ -326,13 +326,9 @@ const initProduct = async (req, res) => {
 
     // save data to DB
     const newProduct = await ProductModel.create(product);
-
-    if (!newProduct) {
-      return res.status(400).json({ message: "Create product unsuccessfully" });
-    }
     res.status(201).json({ message: "Created New Product", newProduct });
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 

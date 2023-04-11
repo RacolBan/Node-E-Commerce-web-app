@@ -131,11 +131,6 @@ const updateCart = async (req, res) => {
         },
       },
     });
-    if (!foundCart) {
-      return res
-        .status(404)
-        .json({ message: "This product never been added to your cart" });
-    }
     const newQuantity = foundCart.quantityProduct + 1;
     await CartModel.update(
       { quantityProduct: newQuantity },
@@ -146,9 +141,7 @@ const updateCart = async (req, res) => {
       }
     );
 
-    res
-      .status(201)
-      .json({ message: "Add your cart successfully", newQuantity });
+    res.status(201).json({ message: "Add your cart successfully", newQuantity });
   } catch (error) {
     return res.status(500).json({ mesage: error.message });
   }

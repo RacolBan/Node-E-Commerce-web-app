@@ -152,15 +152,6 @@ OrderModel.sync();
 OrderdetailModel.sync();
 CartModel.sync();
 PayModel.sync();
-
-
-
-
-
-
-
-
-
 module.exports = {
     UserModel,
     AccountModel,
