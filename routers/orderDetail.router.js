@@ -3,7 +3,7 @@ const { getOrderDetailById, getOrdersDetailByOrderId, getOrdersDetailByProductId
 const router = require("express").Router();
 
 router.get("/:id/orderDetail", getOrderDetailById)
-router.get("/:orderId/orderDetail", getOrdersDetailByOrderId)
+router.get("/orderDetail/:orderId", getOrdersDetailByOrderId)
 router.get("/:productId/orderDetail", getOrdersDetailByProductId)
 router.post("/:orderId/orderDetail", initOrderDetail)
 

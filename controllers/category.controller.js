@@ -33,7 +33,6 @@ const getCategoryByCategoryId = async (req, res) => {
 const initCategory = async (req, res) => {
   try {
     const { name } = req.body;
-    console.log(name)
     const foundCategory = await CategoryModel.findOne({
       where: {
         name

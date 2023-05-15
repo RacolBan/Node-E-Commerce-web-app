@@ -13,17 +13,18 @@ const {
   removeProduct,
   paginationByCategory,
   searchProducts,
+  getProductLaptop,
 } = require("../controllers/product.controller");
 const { verifyTok } = require("../middlewares/auth");
 const { isAdmin } = require("../middlewares/permission");
 
 // API get all product
 router.get("/getAll", getAllProduct);
-router.get("/category/:categoryId", getProductByCategoryId);
+router.get("/category", getProductByCategoryId);
 router.get("/manufacture/:manufactureId", getProductByManufactureId);
 router.get("/pagination", pagination);
 router.get("/search", searchProducts);
-
+router.get("/category/laptop", getProductLaptop)
 router.get("/:productId", getProductById);
 router.post("/", verifyTok, isAdmin, upload.single("file"), initProduct);
 router.put("/:productId", verifyTok, isAdmin, updateProduct);

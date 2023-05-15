@@ -31,76 +31,21 @@ UserModel.hasMany(OrderModel, {
 OrderModel.belongsTo(UserModel, {
     foreignKey: {
         name: "userId",
-    },
+    }
 });
+//ManufactureModel vs CategoryModel: one to many
 
-// Account vs Cart: one to many
-UserModel.hasMany(CartModel, {
+CategoryModel.hasMany(ManufactureModel, {
     foreignKey: {
-        name: "userId",
+        name: "categoryId",
     }
 });
 
-CartModel.belongsTo(UserModel, {
+ManufactureModel.belongsTo(CategoryModel, {
     foreignKey: {
-        name: "userId",
-    },
-});
-
-// OrderModel vs PayModel: one to one
-OrderModel.hasOne(PayModel, {
-    foreignKey: {
-        name: "orderId",
+        name: "categoryId",
     }
 });
-
-PayModel.belongsTo(PayModel, {
-    foreignKey: {
-        name: "orderId",
-    },
-});
-
-//OrderModel vs OrderDetail: one to many
-
-OrderModel.hasMany(OrderdetailModel, {
-    foreignKey: {
-        name: "orderId",
-    }
-});
-
-OrderdetailModel.belongsTo(OrderModel, {
-    foreignKey: {
-        name: "orderId",
-    },
-});
-
-//ProductModel vs OrderDetail: one to one
-
-ProductModel.hasOne(OrderdetailModel, {
-    foreignKey: {
-        name: "productId",
-    },
-});
-
-OrderdetailModel.belongsTo(ProductModel, {
-    foreignKey: {
-        name: "productId",
-    },
-});
-
-// ProductModel vs CartModel: one to many
-
-ProductModel.hasMany(CartModel, {
-    foreignKey: {
-        name: "productId",
-    },
-});
-CartModel.belongsTo(ProductModel, {
-    foreignKey: {
-        name: "productId",
-    },
-});
-
 //Category vs ProductModel : one to many
 
 CategoryModel.hasMany(ProductModel, {
@@ -114,7 +59,6 @@ ProductModel.belongsTo(CategoryModel, {
         name: "categoryId",
     },
 });
-
 //ManufactureModel vs ProductModel: one to many
 
 ManufactureModel.hasMany(ProductModel, {
@@ -128,27 +72,73 @@ ProductModel.belongsTo(ManufactureModel, {
         name: "manufactureId",
     },
 });
-
-//ManufactureModel vs CategoryModel: one to many
-
-CategoryModel.hasMany(ManufactureModel, {
+// Order versus OrderDetail
+OrderModel.hasMany(OrderdetailModel, {
     foreignKey: {
-        name: "categoryId",
+        name: "orderId",
     }
 });
 
-ManufactureModel.belongsTo(CategoryModel, {
+OrderdetailModel.belongsTo(OrderModel, {
     foreignKey: {
-        name: "categoryId",
+        name: "orderId",
+    },
+});
+//ProductModel vs OrderDetail: one to one
+
+ProductModel.hasOne(OrderdetailModel, {
+    foreignKey: {
+        name: "productId",
+    },
+});
+
+OrderdetailModel.belongsTo(ProductModel, {
+    foreignKey: {
+        name: "productId",
+    },
+});
+// User vs Cart: one to many
+UserModel.hasMany(CartModel, {
+    foreignKey: {
+        name: "userId",
+    }
+});
+CartModel.belongsTo(UserModel, {
+    foreignKey: {
+        name: "userId",
+    },
+});
+// ProductModel vs CartModel: one to many
+
+ProductModel.hasMany(CartModel, {
+    foreignKey: {
+        name: "productId",
+    },
+});
+CartModel.belongsTo(ProductModel, {
+    foreignKey: {
+        name: "productId",
+    },
+});
+// OrderModel vs PayModel: one to one
+OrderModel.hasOne(PayModel, {
+    foreignKey: {
+        name: "orderId",
+    }
+});
+
+PayModel.belongsTo(OrderModel, {
+    foreignKey: {
+        name: "orderId",
     },
 });
 
 AccountModel.sync();
 UserModel.sync();
-ManufactureModel.sync();
-CategoryModel.sync();
-ProductModel.sync();
 OrderModel.sync();
+CategoryModel.sync();
+ManufactureModel.sync();
+ProductModel.sync();
 OrderdetailModel.sync();
 CartModel.sync();
 PayModel.sync();

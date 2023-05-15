@@ -71,15 +71,44 @@ const getProductByManufactureId = async (req, res) => {
     return res.status(500).json({ message: error.message });
   }
 };
-
+const getProductLaptop = async (req, res) => {
+  try {
+    const { name } = req.query;
+    const category = await CategoryModel.findOne({where:{name}})
+    console.log(category);
+    const products = await ProductModel.findAll({
+      where: {
+        categoryId: category.dataValues.id
+      },
+    });
+    console.log(products)
+    res.status(200).json(products);
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
 // search data by category ID
 const getProductByCategoryId = async (req, res) => {
   try {
-    const { categoryId } = req.params;
-
+    const { category1, category2 } = req.query;
+    const category = await CategoryModel.findAll({
+      attributes:['id'],
+      where:{
+        [Op.or]:[
+          {name: category1},
+          {name: category2}
+      ]
+      }
+    })
+    const idArr = category.map(category => {
+      return category.dataValues.id
+    })
     const products = await ProductModel.findAll({
       where: {
-        categoryId,
+        [Op.or]:[
+          {categoryId: idArr[0]},
+          {categoryId: idArr[1]}
+        ]
       },
     });
     res.status(200).json(products);
@@ -435,4 +464,5 @@ module.exports = {
   paginationByCategory,
   paginationByManufacture,
   searchProducts,
+  getProductLaptop
 };

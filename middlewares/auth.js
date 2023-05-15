@@ -2,7 +2,6 @@ const jwt = require('jsonwebtoken');
 const verifyTok = async (req, res, next) => {
     try {
         const tok = req.header('authorization');
-        console.log(tok);
         // authentication
         if (!tok) {
             return res.status(401).json({ message: "invalid authentication or incredential" });
